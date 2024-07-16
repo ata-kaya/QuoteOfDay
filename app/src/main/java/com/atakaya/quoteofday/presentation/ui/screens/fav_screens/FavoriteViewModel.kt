@@ -2,8 +2,10 @@ package com.atakaya.quoteofday.presentation.ui.screens.fav_screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.atakaya.quoteofday.data.remote.api.ApiResult
 import com.atakaya.quoteofday.domain.usecase.GetAllFavoritesUseCase
 import com.atakaya.quoteofday.presentation.ui.models.QuoteModel
+import com.atakaya.quoteofday.presentation.ui.models.mapFaveDataToQuoteModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,9 +23,25 @@ class FavoriteViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             getAllFavoritesUseCase.execute().catch {
 
-                }.collect {
-                    _favList.value = it
+            }.collect { response ->
+                when (response) {
+                    is ApiResult.Error -> {
+
+                    }
+
+                    ApiResult.Loading -> {
+
+                    }
+
+                    is ApiResult.Success -> {
+                        _favList.value = response.data?.let { _data ->
+                            _data.map {
+                                it.mapFaveDataToQuoteModel()
+                            }
+                        } ?: run { listOf() }
+                    }
                 }
+            }
         }
     }
 }

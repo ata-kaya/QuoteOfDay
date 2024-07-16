@@ -10,13 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import com.atakaya.quoteofday.data.remote.api.ApiResult
 import com.atakaya.quoteofday.presentation.ui.models.QuoteModel
 import com.atakaya.quoteofday.presentation.ui.screens.common.components.ButtonType
 import com.atakaya.quoteofday.presentation.ui.screens.common.components.QuoteCard
 import com.atakaya.quoteofday.presentation.ui.screens.main_screens.components.BottomBar
 import com.atakaya.quoteofday.presentation.ui.screens.main_screens.components.LoadingScreen
 import com.atakaya.quoteofday.presentation.ui.screens.main_screens.components.TopBar
+import com.atakaya.quoteofday.presentation.ui.state.UIState
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -40,15 +40,15 @@ fun MainScreen(
     }
 
     when (val data = uiState) {
-        is ApiResult.Loading -> LoadingScreen()
-        is ApiResult.Success -> {
+        is UIState.Loading -> LoadingScreen()
+        is UIState.Success -> {
             ContentScreen(navController = navController,
                 quoteModel = data.data,
                 onFavoriteClick = { viewModel.addToFavorite(data) },
                 onShareClick = { viewModel.openShareModalVia(data.data) })
         }
 
-        is ApiResult.Error -> {}
+        is UIState.Error -> {}
     }
 }
 
